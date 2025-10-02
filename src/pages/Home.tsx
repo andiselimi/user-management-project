@@ -1,9 +1,17 @@
 import { useEffect, useState } from "react"
-import { Users, Search, Plus, ArrowUpDown } from "lucide-react"
+import { Search, ArrowUpDown, Check } from "lucide-react"
+import { useAppDispatch, useAppSelector } from "@/store/hooks"
+import { setUsers, addUser, updateUser, deleteUser, setLoading } from "@/store/usersSlice"
 import UserTable from "@/components/UserTable"
 import TopBar from "@/components/TopBar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export interface User {
   id: number
@@ -16,24 +24,24 @@ export interface User {
 }
 
 export default function Home() {
-  const [users, setUsers] = useState<User[]>([])
+  const dispatch = useAppDispatch()
+  const { users, isLoading } = useAppSelector((state) => state.users)
   const [search, setSearch] = useState("")
-  const [isLoading, setIsLoading] = useState(true)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [sortBy, setSortBy] = useState<"none" | "id" | "name">("none")
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc")
 
   useEffect(() => {
+    dispatch(setLoading(true))
     fetch("https://jsonplaceholder.typicode.com/users")
       .then((res) => res.json())
       .then((data) => {
-        setUsers(data)
-        setIsLoading(false)
+        dispatch(setUsers(data))
       })
       .catch((error) => {
         console.error("Error fetching users:", error)
-        setIsLoading(false)
+        dispatch(setLoading(false))
       })
-  }, [])
+  }, [dispatch])
 
   const filteredUsers = users
     .filter(
@@ -42,19 +50,46 @@ export default function Home() {
         user.email.toLowerCase().includes(search.toLowerCase()),
     )
     .sort((a, b) => {
-      if (sortOrder === "asc") {
-        return a.name.localeCompare(b.name)
+      if (sortBy === "none") return 0
+      
+      let comparison = 0
+      if (sortBy === "id") {
+        comparison = a.id - b.id
+      } else if (sortBy === "name") {
+        comparison = a.name.localeCompare(b.name)
       }
-      return b.name.localeCompare(a.name)
+      
+      return sortOrder === "asc" ? comparison : -comparison
     })
 
-  const addUser = (newUser: User) => {
-    setUsers([newUser, ...users])
-    setIsDialogOpen(false)
+  const handleAddUser = (newUser: User) => {
+    dispatch(addUser(newUser))
   }
 
-  const toggleSort = () => {
-    setSortOrder(sortOrder === "asc" ? "desc" : "asc")
+  const handleUpdateUser = (updatedUser: User) => {
+    dispatch(updateUser(updatedUser))
+  }
+
+  const handleDeleteUser = (userId: number) => {
+    dispatch(deleteUser(userId))
+  }
+
+  const handleSortChange = (newSortBy: "none" | "id" | "name") => {
+    if (newSortBy === sortBy) {
+      // Toggle order if same sort field is selected
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc")
+    } else {
+      // Set new sort field and default to ascending
+      setSortBy(newSortBy)
+      setSortOrder("asc")
+    }
+  }
+
+  const getSortLabel = () => {
+    if (sortBy === "none") return "No Sort"
+    const field = sortBy === "id" ? "ID" : "Name"
+    const order = sortOrder === "asc" ? "↑" : "↓"
+    return `${field} ${order}`
   }
 
   return (
@@ -62,7 +97,7 @@ export default function Home() {
       {/* Header */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
-          <TopBar addUser={addUser} />
+          <TopBar addUser={handleAddUser} />
         </div>
       </header>
 
@@ -81,18 +116,49 @@ export default function Home() {
             />
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={toggleSort} className="gap-2 bg-transparent">
-              <ArrowUpDown className="h-4 w-4" />
-              Sort {sortOrder === "asc" ? "A-Z" : "Z-A"}
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2 bg-transparent">
+                  <ArrowUpDown className="h-4 w-4" />
+                  {getSortLabel()}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-40">
+                <DropdownMenuItem 
+                  onClick={() => handleSortChange("none")}
+                  className="flex items-center justify-between"
+                >
+                  No Sort
+                  {sortBy === "none" && <Check className="h-4 w-4" />}
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => handleSortChange("id")}
+                  className="flex items-center justify-between"
+                >
+                  Sort by ID {sortBy === "id" && (sortOrder === "asc" ? "↑" : "↓")}
+                  {sortBy === "id" && <Check className="h-4 w-4" />}
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => handleSortChange("name")}
+                  className="flex items-center justify-between"
+                >
+                  Sort by Name {sortBy === "name" && (sortOrder === "asc" ? "↑" : "↓")}
+                  {sortBy === "name" && <Check className="h-4 w-4" />}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <div className="text-sm text-muted-foreground">
               {filteredUsers.length} {filteredUsers.length === 1 ? "user" : "users"}
             </div>
           </div>
         </div>
 
-        {/* User Table */}
-        <UserTable users={filteredUsers} isLoading={isLoading} />
+        <UserTable 
+          users={filteredUsers} 
+          isLoading={isLoading}
+          onUpdateUser={handleUpdateUser}
+          onDeleteUser={handleDeleteUser}
+        />
       </main>
     </div>
   )

@@ -4,17 +4,60 @@ import type { User } from "../pages/Home"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table"
 import { Card } from "./ui/card"
 import { Badge } from "./ui/badge"
-import { Building2, Mail, ChevronRight } from "lucide-react"
+import { Building2, Mail, ChevronRight, Edit, Trash2 } from "lucide-react"
 import { Skeleton } from "./ui/skeleton"
+import { Button } from "./ui/button"
+import { toast } from "sonner"
+import EditUserDialog from "./EditUserDialog"
 
 interface UserTableProps {
   users: User[]
   isLoading: boolean
+  onUpdateUser: (updatedUser: User) => void
+  onDeleteUser: (userId: number) => void
 }
 
-export default function UserTable({ users, isLoading }: UserTableProps) {
+export default function UserTable({ users, isLoading, onUpdateUser, onDeleteUser }: UserTableProps) {
   const navigate = useNavigate()
   const [hoveredRow, setHoveredRow] = useState<number | null>(null)
+  const [editingUser, setEditingUser] = useState<User | null>(null)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+
+  const handleEditUser = (user: User) => {
+    setEditingUser(user)
+    setIsEditDialogOpen(true)
+  }
+
+  const handleSaveUser = (updatedUser: User) => {
+    onUpdateUser(updatedUser)
+    setIsEditDialogOpen(false)
+    setEditingUser(null)
+  }
+
+  const handleCloseEditDialog = () => {
+    setIsEditDialogOpen(false)
+    setEditingUser(null)
+  }
+
+  const handleDeleteUser = (user: User) => {
+    toast(`Delete ${user.name}?`, {
+      description: "This action cannot be undone.",
+      action: {
+        label: "Delete",
+        onClick: () => {
+          onDeleteUser(user.id)
+          toast.success(`${user.name} has been deleted successfully!`)
+        },
+      },
+      cancel: {
+        label: "Cancel",
+        onClick: () => {
+          // Optional: Add feedback for cancellation
+          // toast.info("Delete cancelled")
+        }
+      }
+    })
+  }
 
   if (isLoading) {
     return (
@@ -58,6 +101,7 @@ export default function UserTable({ users, isLoading }: UserTableProps) {
             <TableHead className="text-muted-foreground font-medium">Name</TableHead>
             <TableHead className="text-muted-foreground font-medium">Email</TableHead>
             <TableHead className="text-muted-foreground font-medium">Company</TableHead>
+            <TableHead className="text-muted-foreground font-medium text-center">Actions</TableHead>
             <TableHead className="text-muted-foreground font-medium w-[50px]"></TableHead>
           </TableRow>
         </TableHeader>
@@ -65,8 +109,7 @@ export default function UserTable({ users, isLoading }: UserTableProps) {
           {users.map((user) => (
             <TableRow
               key={user.id}
-              className="border-border cursor-pointer transition-colors hover:bg-muted/50"
-              onClick={() => navigate(`/user/${user.id}`)}
+              className="border-border transition-colors hover:bg-muted/50"
               onMouseEnter={() => setHoveredRow(user.id)}
               onMouseLeave={() => setHoveredRow(null)}
             >
@@ -94,6 +137,32 @@ export default function UserTable({ users, isLoading }: UserTableProps) {
                 </Badge>
               </TableCell>
               <TableCell>
+                <div className="flex items-center gap-2 justify-center">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleEditUser(user)
+                    }}
+                    className="h-8 w-8 p-0 hover:bg-blue-100 hover:text-blue-600"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleDeleteUser(user)
+                    }}
+                    className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-600"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </TableCell>
+              <TableCell className="cursor-pointer" onClick={() => navigate(`/user/${user.id}`)}>
                 <ChevronRight
                   className={`h-5 w-5 text-muted-foreground transition-transform ${
                     hoveredRow === user.id ? "translate-x-1" : ""
@@ -104,6 +173,13 @@ export default function UserTable({ users, isLoading }: UserTableProps) {
           ))}
         </TableBody>
       </Table>
+      
+      <EditUserDialog
+        user={editingUser}
+        isOpen={isEditDialogOpen}
+        onClose={handleCloseEditDialog}
+        onSave={handleSaveUser}
+      />
     </Card>
   )
 }

@@ -6,6 +6,12 @@ import { Input } from "./ui/input"
 import { Label } from "./ui/label"
 import { toast } from "sonner"
 
+// Helper function to validate website format
+const isValidWebsite = (website: string): boolean => {
+  const websiteRegex = /^(www\.)?[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.[a-zA-Z]{2,}$/
+  return websiteRegex.test(website)
+}
+
 interface UserFormProps {
   onAdd: (user: User) => void
 }
@@ -29,6 +35,12 @@ export default function UserForm({ onAdd }: UserFormProps) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
       toast.error("Please enter a valid email address.")
+      return
+    }
+
+    // Optional website validation - accepts domains ending with common TLDs
+    if (website.trim() && !isValidWebsite(website.trim())) {
+      toast.error("Please enter a valid website (e.g., example.com, site.net, etc.)")
       return
     }
 
@@ -121,8 +133,8 @@ export default function UserForm({ onAdd }: UserFormProps) {
           </Label>
           <Input
             id="website"
-            type="url"
-            placeholder="example.com"
+            type="text"
+            placeholder="example.com or site.net"
             value={website}
             onChange={(e) => setWebsite(e.target.value)}
             className="bg-background border-border"
