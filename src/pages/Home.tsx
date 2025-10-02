@@ -96,15 +96,15 @@ export default function Home() {
     <div className="min-h-screen bg-background min-w-screen">
       {/* Header */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
           <TopBar addUser={handleAddUser} />
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Search and Filter Bar */}
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -115,40 +115,43 @@ export default function Home() {
               className="pl-10 bg-card border-border"
             />
           </div>
-          <div className="flex items-center gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2 bg-transparent">
-                  <ArrowUpDown className="h-4 w-4" />
-                  {getSortLabel()}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuItem 
-                  onClick={() => handleSortChange("none")}
-                  className="flex items-center justify-between"
-                >
-                  No Sort
-                  {sortBy === "none" && <Check className="h-4 w-4" />}
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => handleSortChange("id")}
-                  className="flex items-center justify-between"
-                >
-                  Sort by ID {sortBy === "id" && (sortOrder === "asc" ? "↑" : "↓")}
-                  {sortBy === "id" && <Check className="h-4 w-4" />}
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => handleSortChange("name")}
-                  className="flex items-center justify-between"
-                >
-                  Sort by Name {sortBy === "name" && (sortOrder === "asc" ? "↑" : "↓")}
-                  {sortBy === "name" && <Check className="h-4 w-4" />}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <div className="text-sm text-muted-foreground">
-              {filteredUsers.length} {filteredUsers.length === 1 ? "user" : "users"}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+            <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-2 bg-transparent">
+                    <ArrowUpDown className="h-4 w-4" />
+                    <span className="hidden sm:inline">{getSortLabel()}</span>
+                    <span className="sm:hidden">Sort</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-40">
+                  <DropdownMenuItem 
+                    onClick={() => handleSortChange("none")}
+                    className="flex items-center justify-between"
+                  >
+                    No Sort
+                    {sortBy === "none" && <Check className="h-4 w-4" />}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => handleSortChange("id")}
+                    className="flex items-center justify-between"
+                  >
+                    Sort by ID {sortBy === "id" && (sortOrder === "asc" ? "↑" : "↓")}
+                    {sortBy === "id" && <Check className="h-4 w-4" />}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => handleSortChange("name")}
+                    className="flex items-center justify-between"
+                  >
+                    Sort by Name {sortBy === "name" && (sortOrder === "asc" ? "↑" : "↓")}
+                    {sortBy === "name" && <Check className="h-4 w-4" />}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <div className="text-sm text-muted-foreground whitespace-nowrap">
+                {filteredUsers.length} {filteredUsers.length === 1 ? "user" : "users"}
+              </div>
             </div>
           </div>
         </div>

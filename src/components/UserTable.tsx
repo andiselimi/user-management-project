@@ -62,13 +62,14 @@ export default function UserTable({ users, isLoading, onUpdateUser, onDeleteUser
   if (isLoading) {
     return (
       <Card className="border-border bg-card">
-        <div className="p-6 space-y-4">
+        <div className="p-4 sm:p-6 space-y-4">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="flex items-center gap-4">
-              <Skeleton className="h-12 w-12 rounded-full" />
-              <div className="space-y-2 flex-1">
-                <Skeleton className="h-4 w-[250px]" />
-                <Skeleton className="h-3 w-[200px]" />
+            <div key={i} className="flex items-center gap-3 sm:gap-4">
+              <Skeleton className="h-10 w-10 sm:h-12 sm:w-12 rounded-full flex-shrink-0" />
+              <div className="space-y-2 flex-1 min-w-0">
+                <Skeleton className="h-4 w-full max-w-[250px]" />
+                <Skeleton className="h-3 w-full max-w-[200px]" />
+                <Skeleton className="h-3 w-full max-w-[150px] sm:hidden" />
               </div>
             </div>
           ))}
@@ -95,16 +96,17 @@ export default function UserTable({ users, isLoading, onUpdateUser, onDeleteUser
 
   return (
     <Card className="border-border bg-card overflow-hidden">
-      <Table>
-        <TableHeader>
-          <TableRow className="border-border hover:bg-transparent">
-            <TableHead className="text-muted-foreground font-medium">Name</TableHead>
-            <TableHead className="text-muted-foreground font-medium">Email</TableHead>
-            <TableHead className="text-muted-foreground font-medium">Company</TableHead>
-            <TableHead className="text-muted-foreground font-medium text-center">Actions</TableHead>
-            <TableHead className="text-muted-foreground font-medium w-[50px]"></TableHead>
-          </TableRow>
-        </TableHeader>
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow className="border-border hover:bg-transparent">
+              <TableHead className="text-muted-foreground font-medium min-w-[200px]">Name</TableHead>
+              <TableHead className="text-muted-foreground font-medium hidden sm:table-cell">Email</TableHead>
+              <TableHead className="text-muted-foreground font-medium hidden md:table-cell">Company</TableHead>
+              <TableHead className="text-muted-foreground font-medium text-center min-w-[100px]">Actions</TableHead>
+              <TableHead className="text-muted-foreground font-medium w-[50px] hidden lg:table-cell"></TableHead>
+            </TableRow>
+          </TableHeader>
         <TableBody>
           {users.map((user) => (
             <TableRow
@@ -115,29 +117,35 @@ export default function UserTable({ users, isLoading, onUpdateUser, onDeleteUser
             >
               <TableCell className="font-medium">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-semibold text-sm">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-semibold text-sm flex-shrink-0">
                     {user.name.charAt(0).toUpperCase()}
                   </div>
-                  <div>
-                    <div className="font-medium text-foreground">{user.name}</div>
+                  <div className="min-w-0">
+                    <div className="font-medium text-foreground truncate">{user.name}</div>
                     <div className="text-xs text-muted-foreground">ID: {user.id}</div>
+                    <div className="text-xs text-muted-foreground sm:hidden truncate">{user.email}</div>
+                    <div className="text-xs text-muted-foreground md:hidden">
+                      <Badge variant="secondary" className="text-xs mt-1">
+                        {user.company.name}
+                      </Badge>
+                    </div>
                   </div>
                 </div>
               </TableCell>
-              <TableCell>
+              <TableCell className="hidden sm:table-cell">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Mail className="h-4 w-4" />
-                  <span className="text-sm">{user.email}</span>
+                  <span className="text-sm truncate">{user.email}</span>
                 </div>
               </TableCell>
-              <TableCell>
+              <TableCell className="hidden md:table-cell">
                 <Badge variant="secondary" className="gap-1.5 font-normal">
                   <Building2 className="h-3 w-3" />
-                  {user.company.name}
+                  <span className="truncate">{user.company.name}</span>
                 </Badge>
               </TableCell>
               <TableCell>
-                <div className="flex items-center gap-2 justify-center">
+                <div className="flex items-center gap-1 sm:gap-2 justify-center">
                   <Button
                     variant="ghost"
                     size="sm"
@@ -146,8 +154,9 @@ export default function UserTable({ users, isLoading, onUpdateUser, onDeleteUser
                       handleEditUser(user)
                     }}
                     className="h-8 w-8 p-0 hover:bg-blue-100 hover:text-blue-600"
+                    title="Edit user"
                   >
-                    <Edit className="h-4 w-4" />
+                    <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
                   </Button>
                   <Button
                     variant="ghost"
@@ -157,12 +166,13 @@ export default function UserTable({ users, isLoading, onUpdateUser, onDeleteUser
                       handleDeleteUser(user)
                     }}
                     className="h-8 w-8 p-0 hover:bg-red-100 hover:text-red-600"
+                    title="Delete user"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                   </Button>
                 </div>
               </TableCell>
-              <TableCell className="cursor-pointer" onClick={() => navigate(`/user/${user.id}`)}>
+              <TableCell className="cursor-pointer hidden lg:table-cell" onClick={() => navigate(`/user/${user.id}`)}>
                 <ChevronRight
                   className={`h-5 w-5 text-muted-foreground transition-transform ${
                     hoveredRow === user.id ? "translate-x-1" : ""
@@ -172,7 +182,8 @@ export default function UserTable({ users, isLoading, onUpdateUser, onDeleteUser
             </TableRow>
           ))}
         </TableBody>
-      </Table>
+        </Table>
+      </div>
       
       <EditUserDialog
         user={editingUser}
