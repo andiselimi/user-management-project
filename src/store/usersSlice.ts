@@ -1,4 +1,4 @@
-// Redux slice for user state management
+// Redux for user state management
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import type { User } from '../pages/Home'

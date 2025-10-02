@@ -6,13 +6,10 @@ import { Toaster } from "@/components/ui/sonner"
 function App() {
   return (
     <Router>
-      {/* Define routes for the application */}
       <Routes>
-        <Route path="/" element={<Home />} />                {/* Main user list page */}
-        <Route path="/user/:id" element={<UserDetails />} /> {/* Individual user detail page */}
+        <Route path="/" element={<Home />} />
+        <Route path="/user/:id" element={<UserDetails />} />
       </Routes>
-
-      {/* Toast notifications */}
       <Toaster />
     </Router>
   )
