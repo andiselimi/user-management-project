@@ -30,7 +30,7 @@ export default function UserDetail() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen min-w-screen bg-background">
         <header className="border-b border-border bg-card/50 backdrop-blur-sm">
           <div className="container mx-auto px-4 py-4">
             <Skeleton className="h-10 w-32" />
@@ -55,7 +55,7 @@ export default function UserDetail() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen min-w-screen bg-background flex items-center justify-center">
         <Card className="border-border bg-card max-w-md">
           <CardContent className="pt-6 text-center">
             <UserIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -72,7 +72,7 @@ export default function UserDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen min-w-screen bg-background">
       {/* Header */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
@@ -90,17 +90,17 @@ export default function UserDetail() {
           <CardHeader>
             <div className="flex items-start gap-4">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-2xl">
-                {user.name.charAt(0).toUpperCase()}
+                {user?.name?.charAt(0).toUpperCase()}
               </div>
               <div className="flex-1">
-                <CardTitle className="text-2xl text-foreground mb-2">{user.name}</CardTitle>
+                <CardTitle className="text-2xl text-foreground mb-2">{user?.name}</CardTitle>
                 <div className="flex flex-wrap gap-2">
                   <Badge variant="secondary" className="gap-1.5">
                     <Building2 className="h-3 w-3" />
-                    {user.company.name}
+                    {user?.company?.name}
                   </Badge>
                   <Badge variant="outline" className="gap-1.5">
-                    ID: {user.id}
+                    ID: {user?.id}
                   </Badge>
                 </div>
               </div>
@@ -120,7 +120,7 @@ export default function UserDetail() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Email</p>
-                <p className="text-foreground font-medium">{user.email}</p>
+                <p className="text-foreground font-medium">{user?.email}</p>
               </div>
             </div>
             <Separator className="bg-border" />
@@ -130,7 +130,7 @@ export default function UserDetail() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Phone</p>
-                <p className="text-foreground font-medium">{user.phone}</p>
+                <p className="text-foreground font-medium">{user?.phone}</p>
               </div>
             </div>
             <Separator className="bg-border" />
@@ -141,12 +141,12 @@ export default function UserDetail() {
               <div>
                 <p className="text-sm text-muted-foreground">Website</p>
                 <a
-                  href={`https://${user.website}`}
+                  href={`https://${user?.website}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary font-medium hover:underline"
                 >
-                  {user.website}
+                  {user?.website}
                 </a>
               </div>
             </div>
@@ -165,9 +165,9 @@ export default function UserDetail() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Location</p>
-                <p className="text-foreground font-medium">{user.address.street}</p>
+                <p className="text-foreground font-medium">{user?.address?.street}</p>
                 <p className="text-muted-foreground">
-                  {user.address.city}, {user.address.zipcode}
+                  {user?.address?.city}, {user?.address?.zipcode}
                 </p>
               </div>
             </div>

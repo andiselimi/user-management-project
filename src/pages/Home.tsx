@@ -1,19 +1,9 @@
-"use client"
-
 import { useEffect, useState } from "react"
 import { Users, Search, Plus, ArrowUpDown } from "lucide-react"
 import UserTable from "@/components/UserTable"
-import UserForm from "@/components/UserForm"
-import { Button } from "../components/ui/button"
-import { Input } from "../components/ui/input"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../components/ui/dialog"
+import TopBar from "@/components/TopBar"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 
 export interface User {
   id: number
@@ -68,38 +58,11 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background min-w-screen">
       {/* Header */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                <Users className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <h1 className="text-xl font-semibold text-foreground">User Management</h1>
-                <p className="text-sm text-muted-foreground">Manage and organize users</p>
-              </div>
-            </div>
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="gap-2">
-                  <Plus className="h-4 w-4" />
-                  Add User
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[500px]">
-                <DialogHeader>
-                  <DialogTitle>Add New User</DialogTitle>
-                  <DialogDescription>
-                    Create a new user entry. This will be added locally to the list.
-                  </DialogDescription>
-                </DialogHeader>
-                <UserForm onAdd={addUser} />
-              </DialogContent>
-            </Dialog>
-          </div>
+          <TopBar addUser={addUser} />
         </div>
       </header>
 
