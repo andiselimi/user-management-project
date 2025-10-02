@@ -1,3 +1,4 @@
+// User table with edit/delete functionality and responsive design
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import type { User } from "../pages/Home"
@@ -18,11 +19,14 @@ interface UserTableProps {
 }
 
 export default function UserTable({ users, isLoading, onUpdateUser, onDeleteUser }: UserTableProps) {
-  const navigate = useNavigate()
-  const [hoveredRow, setHoveredRow] = useState<number | null>(null)
-  const [editingUser, setEditingUser] = useState<User | null>(null)
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const navigate = useNavigate() // For user details navigation
+  
+  // Component state
+  const [hoveredRow, setHoveredRow] = useState<number | null>(null) // Row hover effects
+  const [editingUser, setEditingUser] = useState<User | null>(null) // User being edited
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false) // Edit dialog visibility
 
+  // Edit user handlers
   const handleEditUser = (user: User) => {
     setEditingUser(user)
     setIsEditDialogOpen(true)
@@ -39,6 +43,7 @@ export default function UserTable({ users, isLoading, onUpdateUser, onDeleteUser
     setEditingUser(null)
   }
 
+  // Delete user with confirmation toast
   const handleDeleteUser = (user: User) => {
     toast(`Delete ${user.name}?`, {
       description: "This action cannot be undone.",
@@ -52,13 +57,13 @@ export default function UserTable({ users, isLoading, onUpdateUser, onDeleteUser
       cancel: {
         label: "Cancel",
         onClick: () => {
-          // Optional: Add feedback for cancellation
-          // toast.info("Delete cancelled")
+          toast.info("Delete cancelled")
         }
       }
     })
   }
 
+  // Loading state with skeleton placeholders
   if (isLoading) {
     return (
       <Card className="border-border bg-card">
@@ -78,6 +83,7 @@ export default function UserTable({ users, isLoading, onUpdateUser, onDeleteUser
     )
   }
 
+  // Empty state when no users found
   if (users.length === 0) {
     return (
       <Card className="border-border bg-card">
@@ -94,6 +100,7 @@ export default function UserTable({ users, isLoading, onUpdateUser, onDeleteUser
     )
   }
 
+  // Responsive table with progressive disclosure
   return (
     <Card className="border-border bg-card overflow-hidden">
       <div className="overflow-x-auto">
@@ -115,6 +122,7 @@ export default function UserTable({ users, isLoading, onUpdateUser, onDeleteUser
               onMouseEnter={() => setHoveredRow(user.id)}
               onMouseLeave={() => setHoveredRow(null)}
             >
+              {/* User info with avatar - shows email/company on mobile */}
               <TableCell className="font-medium">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-semibold text-sm flex-shrink-0">
@@ -144,6 +152,7 @@ export default function UserTable({ users, isLoading, onUpdateUser, onDeleteUser
                   <span className="truncate">{user.company.name}</span>
                 </Badge>
               </TableCell>
+              {/* Edit and Delete action buttons */}
               <TableCell>
                 <div className="flex items-center gap-1 sm:gap-2 justify-center">
                   <Button
@@ -172,6 +181,7 @@ export default function UserTable({ users, isLoading, onUpdateUser, onDeleteUser
                   </Button>
                 </div>
               </TableCell>
+              {/* Navigate to user details page */}
               <TableCell className="cursor-pointer hidden lg:table-cell" onClick={() => navigate(`/user/${user.id}`)}>
                 <ChevronRight
                   className={`h-5 w-5 text-muted-foreground transition-transform ${
@@ -185,6 +195,7 @@ export default function UserTable({ users, isLoading, onUpdateUser, onDeleteUser
         </Table>
       </div>
       
+      {/* Edit user dialog */}
       <EditUserDialog
         user={editingUser}
         isOpen={isEditDialogOpen}

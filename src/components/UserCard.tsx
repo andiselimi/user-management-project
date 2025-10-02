@@ -1,14 +1,16 @@
-import type { FC } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import type { FC } from "react"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 
+// Props definition for UserCard
 interface UserCardProps {
   user: {
-    name: string;
-    email: string;
-    company: { name: string };
-  };
+    name: string
+    email: string
+    company: { name: string }
+  }
 }
 
+// Presentational card for displaying a single user
 const UserCard: FC<UserCardProps> = ({ user }) => {
   return (
     <Card className="hover:shadow-lg transition-shadow">
@@ -20,7 +22,7 @@ const UserCard: FC<UserCardProps> = ({ user }) => {
         <p className="text-sm text-gray-500">Company: {user.company.name}</p>
       </CardContent>
     </Card>
-  );
-};
+  )
+}
 
-export default UserCard;
+export default UserCard

@@ -1,3 +1,4 @@
+// User detail page - shows individual user info with contact and address
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import type { User } from "./Home"
@@ -14,6 +15,7 @@ export default function UserDetail() {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
+  // Fetch user data when component mounts
   useEffect(() => {
     const userId = params.id
     fetch(`https://jsonplaceholder.typicode.com/users/${userId}`)
@@ -28,6 +30,7 @@ export default function UserDetail() {
       })
   }, [params.id])
 
+  // Loading skeleton state
   if (isLoading) {
     return (
       <div className="min-h-screen min-w-screen bg-background">
@@ -53,6 +56,7 @@ export default function UserDetail() {
     )
   }
 
+  // Handle missing user case
   if (!user) {
     return (
       <div className="min-h-screen min-w-screen bg-background flex items-center justify-center">
@@ -73,7 +77,7 @@ export default function UserDetail() {
 
   return (
     <div className="min-h-screen min-w-screen bg-background">
-      {/* Header */}
+      {/* HEADER: Back button */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
           <Button variant="ghost" onClick={() => navigate("/")} className="gap-2">
@@ -83,9 +87,9 @@ export default function UserDetail() {
         </div>
       </header>
 
-      {/* Main Content */}
+      {/* MAIN CONTENT */}
       <main className="container mx-auto px-4 py-8 max-w-4xl">
-        {/* User Header Card */}
+        {/* USER HEADER CARD */}
         <Card className="border-border bg-card mb-6">
           <CardHeader>
             <div className="flex items-start gap-4">
@@ -108,12 +112,13 @@ export default function UserDetail() {
           </CardHeader>
         </Card>
 
-        {/* Contact Information */}
+        {/* CONTACT INFORMATION */}
         <Card className="border-border bg-card mb-6">
           <CardHeader>
             <CardTitle className="text-lg text-foreground">Contact Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Email */}
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
                 <Mail className="h-5 w-5 text-muted-foreground" />
@@ -124,6 +129,8 @@ export default function UserDetail() {
               </div>
             </div>
             <Separator className="bg-border" />
+
+            {/* Phone */}
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
                 <Phone className="h-5 w-5 text-muted-foreground" />
@@ -134,6 +141,8 @@ export default function UserDetail() {
               </div>
             </div>
             <Separator className="bg-border" />
+
+            {/* Website */}
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
                 <Globe className="h-5 w-5 text-muted-foreground" />
@@ -153,7 +162,7 @@ export default function UserDetail() {
           </CardContent>
         </Card>
 
-        {/* Address Information */}
+        {/* ADDRESS INFORMATION */}
         <Card className="border-border bg-card">
           <CardHeader>
             <CardTitle className="text-lg text-foreground">Address</CardTitle>

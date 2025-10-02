@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
+// User data structure matching JSONPlaceholder API format
 export interface User {
   id: number
   name: string
@@ -24,18 +25,22 @@ export interface User {
 }
 
 export default function Home() {
+  // Redux state management
   const dispatch = useAppDispatch()
   const { users, isLoading } = useAppSelector((state) => state.users)
-  const [search, setSearch] = useState("")
-  const [sortBy, setSortBy] = useState<"none" | "id" | "name">("none")
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc")
+  
+  // Local component state
+  const [search, setSearch] = useState("") // Search functionality
+  const [sortBy, setSortBy] = useState<"none" | "id" | "name">("none") // Sorting
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc") // Sort order
 
+  // List Users - Fetch from JSONPlaceholder API
   useEffect(() => {
     dispatch(setLoading(true))
     fetch("https://jsonplaceholder.typicode.com/users")
       .then((res) => res.json())
       .then((data) => {
-        dispatch(setUsers(data))
+        dispatch(setUsers(data)) // Store in Redux state
       })
       .catch((error) => {
         console.error("Error fetching users:", error)
@@ -43,6 +48,8 @@ export default function Home() {
       })
   }, [dispatch])
 
+  // Search by name or email
+  // Sort by ID, Name, or None
   const filteredUsers = users
     .filter(
       (user) =>
@@ -63,23 +70,21 @@ export default function Home() {
     })
 
   const handleAddUser = (newUser: User) => {
-    dispatch(addUser(newUser))
+    dispatch(addUser(newUser)) // Add new local user
   }
 
   const handleUpdateUser = (updatedUser: User) => {
-    dispatch(updateUser(updatedUser))
+    dispatch(updateUser(updatedUser)) // Update existing user
   }
 
   const handleDeleteUser = (userId: number) => {
-    dispatch(deleteUser(userId))
+    dispatch(deleteUser(userId)) // Delete user
   }
 
   const handleSortChange = (newSortBy: "none" | "id" | "name") => {
     if (newSortBy === sortBy) {
-      // Toggle order if same sort field is selected
       setSortOrder(sortOrder === "asc" ? "desc" : "asc")
     } else {
-      // Set new sort field and default to ascending
       setSortBy(newSortBy)
       setSortOrder("asc")
     }
@@ -94,16 +99,15 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background min-w-screen">
-      {/* Header */}
+      {/* HEADER: Contains app title and Add User button */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+        <div className="container mx-auto px-4 py-4">
           <TopBar addUser={handleAddUser} />
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        {/* Search and Filter Bar */}
+      {/* MAIN CONTENT: Search bar, filters, and user table */}
+      <main className="container mx-auto px-4 py-8">
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />

@@ -1,8 +1,5 @@
-import React, { useState, useEffect } from "react"
+// Edit user dialog - reuses UserForm component
 import type { User } from "../pages/Home"
-import { Button } from "./ui/button"
-import { Input } from "./ui/input"
-import { Label } from "./ui/label"
 import {
   Dialog,
   DialogContent,
@@ -10,15 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog"
-import { toast } from "sonner"
-
-// Helper function to validate website format
-const isValidWebsite = (website: string): boolean => {
-  // Accept domains ending with common TLDs (com, net, org, etc.)
-  // Also accepts with or without www. prefix
-  const websiteRegex = /^(www\.)?[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.[a-zA-Z]{2,}$/
-  return websiteRegex.test(website)
-}
+import UserForm from "./UserForm" // REUSED COMPONENT - No code duplication!
 
 interface EditUserDialogProps {
   user: User | null
@@ -28,76 +17,16 @@ interface EditUserDialogProps {
 }
 
 export default function EditUserDialog({ user, isOpen, onClose, onSave }: EditUserDialogProps) {
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [company, setCompany] = useState("")
-  const [phone, setPhone] = useState("")
-  const [website, setWebsite] = useState("")
-
-  // Update form when user prop changes
-  useEffect(() => {
-    if (user) {
-      setName(user.name)
-      setEmail(user.email)
-      setCompany(user.company.name)
-      setPhone(user.phone || "")
-      setWebsite(user.website || "")
-    }
-  }, [user])
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!user) return
-
-    if (!name.trim() || !email.trim()) {
-      toast.error("Name and Email are required fields.")
-      return
-    }
-
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
-      toast.error("Please enter a valid email address.")
-      return
-    }
-
-    // Optional website validation - accepts domains ending with common TLDs
-    if (website.trim() && !isValidWebsite(website.trim())) {
-      toast.error("Please enter a valid website (e.g., example.com, site.net, etc.)")
-      return
-    }
-
-    const updatedUser: User = {
-      ...user,
-      name: name.trim(),
-      email: email.trim(),
-      company: { name: company.trim() || "Company" },
-      phone: phone.trim(),
-      website: website.trim(),
-    }
-
+  // Handle save and close dialog
+  const handleSave = (updatedUser: User) => {
     onSave(updatedUser)
     onClose()
-    toast.success(`${updatedUser.name} has been updated successfully!`)
-  }
-
-  const handleClose = () => {
-    onClose()
-    // Reset form to original values
-    if (user) {
-      setName(user.name)
-      setEmail(user.email)
-      setCompany(user.company.name)
-      setPhone(user.phone || "")
-      setWebsite(user.website || "")
-    }
   }
 
   if (!user) return null
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-[95vw] max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit User</DialogTitle>
@@ -106,90 +35,12 @@ export default function EditUserDialog({ user, isOpen, onClose, onSave }: EditUs
           </DialogDescription>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="edit-name" className="text-foreground">
-              Name <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="edit-name"
-              type="text"
-              placeholder="John Doe"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="bg-background border-border"
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="edit-email" className="text-foreground">
-              Email <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="edit-email"
-              type="email"
-              placeholder="john@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="bg-background border-border"
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="edit-company" className="text-foreground">
-              Company
-            </Label>
-            <Input
-              id="edit-company"
-              type="text"
-              placeholder="Acme Inc."
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
-              className="bg-background border-border"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="edit-phone" className="text-foreground">
-                Phone
-              </Label>
-              <Input
-                id="edit-phone"
-                type="tel"
-                placeholder="+1 234 567 8900"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="bg-background border-border"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="edit-website" className="text-foreground">
-                Website
-              </Label>
-              <Input
-                id="edit-website"
-                type="text"
-                placeholder="example.com or site.net"
-                value={website}
-                onChange={(e) => setWebsite(e.target.value)}
-                className="bg-background border-border"
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={handleClose} className="w-full sm:w-auto">
-              Cancel
-            </Button>
-            <Button type="submit" className="w-full sm:w-auto">
-              Save Changes
-            </Button>
-          </div>
-        </form>
+        <UserForm 
+          user={user}
+          onSubmit={handleSave}
+          onCancel={onClose}
+          mode="edit"
+        />
       </DialogContent>
     </Dialog>
   )
